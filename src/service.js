@@ -7,6 +7,7 @@ const checkUnique = require('./check-unique');
 const identityChange = require('./identity-change');
 const passwordChange = require('./password-change');
 const resendVerifySignup = require('./resend-verify-signup');
+const resendVerifyGenericOperation = require('./genericoperation/resend-verify-genricoperation');
 const sanitizeUserForClient = require('./helpers/sanitize-user-for-client');
 const sendResetPwd = require('./send-reset-pwd');
 const {
@@ -21,11 +22,16 @@ const {
   verifySignupSetPasswordWithLongToken,
   verifySignupSetPasswordWithShortToken
 } = require('./verify-signup-set-password');
+const {
+  verifyGenericOperationWithLongToken,
+  verifyGenericOperationWithShortToken
+} = require('./genericoperation/verify-genericoperation');
 const passwordField = 'password';
 
 const optionsDefault = {
   app: null, // value set during configuration
   service: '/users', // need exactly this for test suite
+  genericAuthService: '/authstate',
   path: 'authManagement',
   notifier: async () => {},
   longTokenLen: 15, // token's length will be twice this
@@ -36,6 +42,7 @@ const optionsDefault = {
   resetAttempts: 0,
   reuseResetToken: false,
   identifyUserProps: ['email'],
+  identifyGenericAuthUserProps: ['email'],
   sanitizeUserForClient
 };
 
@@ -185,6 +192,41 @@ function authLocalMgntMethods (options) {
           } catch (err) {
             return Promise.reject(err);
           }
+        case 'resendVerifyGenericOperation':
+          try {
+            return await resendVerifyGenericOperation(
+              options,
+              data.value,
+              data.opcode,
+              data.notifierOptions
+            );
+          } catch (err) {
+            return Promise.reject(err);
+          }
+          case 'verifyGenericLong':
+            try {
+              return await verifyGenericOperationWithLongToken(
+                options,
+                data.value,
+                data.opcode,
+                data.notifierOptions
+              );
+            } catch (err) {
+              return Promise.reject(err);
+            }
+          case 'verifyGenericShort':
+            try {
+              console.log('verifyGenericShort ', data.opcode);
+              return await verifyGenericOperationWithShortToken(
+                options,
+                data.value.token,
+                data.value.user,
+                data.opcode,
+                data.notifierOptions
+              );
+            } catch (err) {
+              return Promise.reject(err);
+            }
         case 'options':
           return options;
         default:
