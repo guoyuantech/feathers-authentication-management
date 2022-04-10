@@ -59,8 +59,9 @@ function authenticationLocalManagement (options1 = {}, docs = {}) {
 
 function authLocalMgntMethods (options) {
   return {
-    async create (data) {
+    async create (data, params) {
       debug(`create called. action=${data.action}`);
+      console.log('authLocalMgntMethods', params, data);
 
       switch (data.action) {
         case 'checkUnique':
@@ -198,6 +199,7 @@ function authLocalMgntMethods (options) {
               options,
               data.value,
               data.opcode,
+              data.changes,
               data.notifierOptions
             );
           } catch (err) {
@@ -209,6 +211,7 @@ function authLocalMgntMethods (options) {
                 options,
                 data.value,
                 data.opcode,
+                data.changes,
                 data.notifierOptions
               );
             } catch (err) {
@@ -216,7 +219,6 @@ function authLocalMgntMethods (options) {
             }
           case 'verifyGenericShort':
             try {
-              console.log('verifyGenericShort ', data.opcode);
               return await verifyGenericOperationWithShortToken(
                 options,
                 data.value.token,

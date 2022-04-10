@@ -12,25 +12,22 @@ module.exports = {
   verifyGenericOperationWithShortToken
 };
 
-async function verifyGenericOperationWithLongToken (options, verifyToken, notifierOptions = {}) {
+async function verifyGenericOperationWithLongToken (options, verifyToken, opcode = null, changes = {}, notifierOptions = {}) {
   ensureValuesAreStrings(verifyToken);
 
-  const result = await verifyGenericOperation(options, { verifyToken }, { verifyToken }, notifierOptions);
+  const result = await verifyGenericOperation(options, { verifyToken }, { verifyToken, opcode }, changes, notifierOptions);
   return result;
 }
 
-async function verifyGenericOperationWithShortToken (options, verifyShortToken, identifyUser, opcode = null, notifierOptions = {}) {
+async function verifyGenericOperationWithShortToken (options, verifyShortToken, identifyUser, opcode = null, changes = {}, notifierOptions = {}) {
   ensureValuesAreStrings(verifyShortToken);
-  console.log('identity user opcode', opcode);
-  console.log(identifyUser);
-  console.log(options.identifyGenericAuthUserProps);
   ensureObjPropsValid(identifyUser, options.identifyGenericAuthUserProps);
 
-  const result = await verifyGenericOperation(options, identifyUser, { verifyShortToken, opcode }, notifierOptions);
+  const result = await verifyGenericOperation(options, identifyUser, { verifyShortToken, opcode }, changes, notifierOptions);
   return result;
 }
 
-async function verifyGenericOperation (options, query, tokens, notifierOptions = {}) {
+async function verifyGenericOperation (options, query, tokens, changes = {}, notifierOptions = {}) {
   debug('verifyGenericOperation', query, tokens);
   const usersService = options.app.service(options.genericAuthService);
   const usersServiceIdName = usersService.id;
@@ -60,7 +57,8 @@ async function verifyGenericOperation (options, query, tokens, notifierOptions =
       verifyShortToken: null,
       verifyExpires: null,
       verifyChanges: {},
-      isVerified: true // 单次验证通过，用户可以标记为已验证
+      isVerified: true, // 单次验证通过，用户可以标记为已验证
+      ...changes
     });
 
     const result = await usersService.patch(user[usersServiceIdName], patchToUser, {});

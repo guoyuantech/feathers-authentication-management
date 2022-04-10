@@ -25,14 +25,14 @@ function getUserData (data, checks = []) {
   if (checks.includes('isNotVerifiedOrHasVerifyChanges') &&
     user.isVerified && !Object.keys(user.verifyChanges || {}).length
   ) {
-    throw new errors.BadRequest('用户已通过验证且没有需要验证的更新.',
+    throw new errors.BadRequest('验证码已失效.',
       { errors: { $className: 'nothingToVerify' } });
   }
 
   if (checks.includes('isNotGenericVerifiedOrHasVerifyChanges') &&
     user.isGenericVerified && !Object.keys(user.verifyChanges || {}).length
   ) {
-    throw new errors.BadRequest('用户验证码已验证且没有需要验证的更新.',
+    throw new errors.BadRequest('验证码已失效.',
       { errors: { $className: 'nothingGenericToVerify' } });
   }
 

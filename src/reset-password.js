@@ -91,8 +91,9 @@ async function resetPassword (options, query, tokens, password, field, notifierO
     }
   }
 
+  console.log('password ' + password + ' haspassword' + (await hashPassword(options.app, password, field)));
   const user2 = await usersService.patch(user1[usersServiceIdName], {
-    password: await hashPassword(options.app, password, field),
+    password: password,
     resetExpires: null,
     resetAttempts: null,
     resetToken: null,

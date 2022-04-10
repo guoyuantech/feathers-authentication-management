@@ -22,7 +22,6 @@ module.exports = async function resendVerifyGenericOperation (options, identifyU
   const users = await usersService.find({ query: identifyUser });
   const user1 = getUserData(users, ['verifyNearExpiry']);
 
-  console.log('patch with opcode ', opcode);
   const user2 = await usersService.patch(user1[usersServiceIdName], {
     isGenericVerified: false,
     opcode: opcode,
